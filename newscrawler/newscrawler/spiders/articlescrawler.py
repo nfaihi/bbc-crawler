@@ -1,4 +1,6 @@
 import scrapy
+import json
+
 
 class ArticlesSpider(scrapy.Spider):
     # spider name
@@ -7,7 +9,9 @@ class ArticlesSpider(scrapy.Spider):
     urls = []
     # news articles data
     articles = []
+    index = 0
 
+    # select the news articles url
     start_urls = [
         'https://www.bbc.com/news'
     ]
@@ -23,25 +27,29 @@ class ArticlesSpider(scrapy.Spider):
                 self.urls.append(self.start_urls[0] + article_url)
 
         # scrap articles data
-        next_article = self.urls[0]
-        if next_article is not None:
-            next_article = response.urljoin(next_article)
-            yield scrapy.Request(next_article, callback=self.parse)
-            if response.css('div.story-body h1::text').get() is not None:
-                text = ""
-                # print(len(response.css('div.story-body__inner p::text')))
-                # get article text
-                for i in range(0, len(response.css('div.story-body__inner p::text'))):
-                    text += response.css('div.story-body__inner p::text')[i].get()
+        for url in self.urls:
+            if url is not None:
+                # url = response.urljoin(url)
+                yield scrapy.Request(url=url, callback=self.parse)
+        if response.css('div.story-body h1::text').get() is not None:
+            text = ""
+            # get article text
+            for j in range(0, len(response.css('div.story-body__inner p::text'))):
+                text += response.css('div.story-body__inner p::text')[j].get()
 
-                # add the important data in a list as dictionaries
-                # this data must be stored in a mongodb database
-                self.articles.append(dict({
-                    'url': next_article,
-                    'title': response.css('div.story-body h1::text').get(),
-                    'date': response.css('div.date::attr(data-datetime)').get(),
-                    'story body': response.css('p.story-body__introduction::text').get(),
-                    'article text': text
-                }))
-
-        print(self.articles)
+            # select the author if exist
+            author = 'Unknown' if (response.css('span.byline__name::text').get() is None) else response.css('span.byline__name::text').get()
+            # add the important data in a list as dictionaries
+            # this data must be stored in a mongodb database
+            self.articles.append(dict({
+                'url': self.urls[self.index],
+                'author': author,
+                'title': response.css('div.story-body h1::text').get(),
+                'date': response.css('div.date::attr(data-datetime)').get(),
+                'story_body': response.css('p.story-body__introduction::text').get(),
+                'article_text': text
+            }))
+            self.index += 1
+            # write selected articles in a json file
+            with open('articles.json', 'w') as f:
+                f.write(json.dumps(self.articles))
