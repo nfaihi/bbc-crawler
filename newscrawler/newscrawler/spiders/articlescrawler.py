@@ -9,7 +9,6 @@ class ArticlesSpider(scrapy.Spider):
     urls = []
     # news articles data
     articles = []
-    index = 0
 
     # select the news articles url
     start_urls = [
@@ -42,14 +41,13 @@ class ArticlesSpider(scrapy.Spider):
             # add the important data in a list as dictionaries
             # this data must be stored in a mongodb database
             self.articles.append(dict({
-                'url': self.urls[self.index],
+                'url': response.request.url,
                 'author': author,
                 'title': response.css('div.story-body h1::text').get(),
                 'date': response.css('div.date::attr(data-datetime)').get(),
                 'story_body': response.css('p.story-body__introduction::text').get(),
                 'article_text': text
             }))
-            self.index += 1
             # write selected articles in a json file
             with open('articles.json', 'w') as f:
                 f.write(json.dumps(self.articles))
