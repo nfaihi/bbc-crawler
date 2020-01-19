@@ -46,10 +46,10 @@ class ArticlesSpider(scrapy.Spider):
             self.articles.append(dict({
                 'url': response.request.url,
                 'author': author,
-                'title': response.css('div.story-body h1::text').get(),
+                'title': str(response.css('div.story-body h1::text').get()).lower(),
                 'date': response.css('div.date::attr(data-datetime)').get(),
                 'story_body': response.css('p.story-body__introduction::text').get(),
-                'article_text': text
+                'article_text': text.lower()
             }))
 
         # prepare a dictionary of articles to use it while
