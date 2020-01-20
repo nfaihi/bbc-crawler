@@ -1,5 +1,7 @@
 # Data Engineering Coding Challenge - News Content Collect and Store
 
+***
+
 The purpose of this coding challenge given by **United Remote** is to develop a solution using Python that crawls news articles from the news website www.bbc.com, by selecting
 the necessary information about the news stories such as : title, author, article text, etc. And stores this data into a mongo database, then makes it available to search via an API.
 
@@ -22,6 +24,8 @@ By finishing building the web spider under the **project_name/spiders** director
   
     $ scrapy crawl 'spider_name'
 
+---
+
 ### 2. Cleanse the articles :
 After scraping and extracting the news data, this data must be cleaned by removing the superfluous content such as advertising and 
 HTML to obtain only information relevant to the news stories e.g. **article text, author, headline, article url**, etc.
@@ -30,6 +34,8 @@ To do this job, we can use the framework [Readability](https://pypi.org/project/
 	$ pip install readability
   
 > NB : In my project I did not use the Readability framework, I just select the necessary data while scraping using **Scrapy selectors**.
+
+---
 
 ### 3. Store the crawled data :
 
@@ -42,6 +48,8 @@ ITEM_PIPELINES = {
 }
 ```
 In this challenge I am using the [compose.io/mongo](https://www.compose.com/databases/mongodb) as a hosted Mongo database.
+
+---
 
 ### 4. Create API :
 The last step in this challenge is to create an **API that provides access to the content in the mongo database, that the user should be able
