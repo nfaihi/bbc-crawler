@@ -1,4 +1,5 @@
 import scrapy
+from scrapy.signals import spider_closed
 import json
 
 
@@ -8,8 +9,9 @@ class ArticlesSpider(scrapy.Spider):
     # all news urls
     urls = []
     # news articles data
-    articles = []
+    articles = {}
     completed = False
+    i = 0
     # select the news articles url
     start_urls = [
         'https://www.bbc.com/news'
@@ -30,7 +32,6 @@ class ArticlesSpider(scrapy.Spider):
             # scrap articles data
             for url in self.urls:
                 if url is not None:
-                    # url = response.urljoin(url)
                     yield scrapy.Request(url=url, callback=self.parse)
             self.completed = True
 
@@ -39,31 +40,25 @@ class ArticlesSpider(scrapy.Spider):
             # get article text
             for j in range(0, len(response.css('div.story-body__inner p::text'))):
                 text += response.css('div.story-body__inner p::text')[j].get()
-
             # select the author if exist
             author = 'Unknown' if (response.css('span.byline__name::text').get() is None) else response.css('span.byline__name::text').get()
             # add the important data in a list as dictionaries
-            self.articles.append(dict({
+            self.articles.update({str(self.i): {
                 'url': response.request.url,
                 'author': author,
                 'title': str(response.css('div.story-body h1::text').get()).lower(),
                 'date': response.css('div.date::attr(data-datetime)').get(),
                 'story_body': response.css('p.story-body__introduction::text').get(),
                 'article_text': text.lower()
-            }))
+            }})
+            self.i += 1
 
-        # prepare a dictionary of articles to use it while
-        # inserting data into database
-        i = 0
-        articles = {}
-        for article in self.articles:
-            articles.update({str(i): article})
-            i += 1
+            # select the first 20 articles for testing
+            if len(self.articles) == 20:
+                yield self.articles
 
         # write selected articles in a json file
+        # to compare it with the one created in the pipeline
         with open('articles.json', 'w') as f:
-            f.write(json.dumps(articles))
+            f.write(json.dumps(self.articles))
 
-        # select the first 25 articles for testing
-        if len(articles) == 25:
-            yield articles
