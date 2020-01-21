@@ -47,7 +47,9 @@ ITEM_PIPELINES = {
    'newscrawler.pipelines.NewscrawlerPipeline': 300,
 }
 ```
-In this challenge I am using the [compose.io/mongo](https://www.compose.com/databases/mongodb) as a hosted Mongo database.
+In this challenge I am using a local mongodb database on Windows with the [MongoDB Compass](https://www.mongodb.com/download-center/compass?jmp=docs) GUI tool to visualize the stored data.
+
+> NB: the testing database is under the project folder in both json and csv formats
 
 ---
 
@@ -94,7 +96,7 @@ def get_news_by_keyword(keyword):
     return jsonify(articles_list)
 ```
 
-After installing Flask and creating and configuring the endpoints needed, we run the python file and start working with the API to communicate
-with the database.
+After installing Flask and creating and configuring the endpoints needed, we run the python file and start working with the API to communicate with the database.
+
 > For testing the created API, you can use [Advanced REST Client](https://install.advancedrestclient.com/install), [POSTMAN](https://www.getpostman.com/) or
 simply use your favorite browser.
