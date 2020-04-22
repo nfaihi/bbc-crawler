@@ -98,7 +98,9 @@ def get_news_by_keyword(keyword):
 
 After installing Flask and creating and configuring the endpoints needed, we run the python file and start working with the API to communicate with the database.
 
-<img src="demo/Flask API test.gif" width="797" height="484" alt="demo flask api"/>
+<p align="center">
+    <img src="demo/Flask API test.gif" width="797" height="484" alt="demo flask api"/>
+</p>
 
 > For testing the created API, you can use [Advanced REST Client](https://install.advancedrestclient.com/install), [POSTMAN](https://www.getpostman.com/) or
 simply use your favorite browser.
